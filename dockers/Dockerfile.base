@@ -1,0 +1,23 @@
+FROM nvidia/cuda:11.4.1-devel-ubuntu20.04
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update \
+    &&  apt-get install -yq \
+        build-essential libbz2-dev libdb-dev \
+        libreadline-dev libffi-dev libgdbm-dev liblzma-dev \
+        libncursesw5-dev libsqlite3-dev libssl-dev \
+        zlib1g-dev uuid-dev tk-dev \
+        curl
+
+# install python
+WORKDIR /root/
+RUN curl https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tar.xz --output Python-3.9.7.tar.xz \
+    && tar xvf Python-3.9.7.tar.xz \
+    && cd Python-3.9.7 \
+    && ./configure --enable-optimizations \
+    && make install
+RUN rm Python-3.9.7.tar.xz
+RUN rm -r Python-3.9.7
+
+
