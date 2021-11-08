@@ -1,8 +1,9 @@
-import numpy as np
-import pandas as pd
-import re
 import os
 import pickle
+import re
+
+import numpy as np
+import pandas as pd
 
 
 def is_num(text):
@@ -291,17 +292,20 @@ def main(path, domains):
     dev_dataset = {}
     for domain in domains:
         print(domain)
-        for file in os.listdir(f"{path}/BCCWJ/{domain}"):
-            document = load_document(f"{path}/BCCWJ/{domain}/{file}")
-            df = document_to_df(document)
-            if file_type[file] == "train":
-                train_dataset[file] = df
-            elif file_type[file] == "test":
-                test_dataset[file] = df
-            elif file_type[file] == "dev":
-                dev_dataset[file] = df
-            else:
-                assert ValueError("")
+        for file in os.listdir(f"{path}/BCCWJ-DepParaPAS-3.0.0_1.0.0_20151101/data"):
+            if domain in file:
+                document = load_document(
+                    f"{path}/BCCWJ-DepParaPAS-3.0.0_1.0.0_20151101/data/{file}"
+                )
+                df = document_to_df(document)
+                if file_type[file] == "train":
+                    train_dataset[file] = df
+                elif file_type[file] == "test":
+                    test_dataset[file] = df
+                elif file_type[file] == "dev":
+                    dev_dataset[file] = df
+                else:
+                    assert ValueError("")
     with open(f"../data/train_dataset.pickle", mode="wb") as f:
         pickle.dump(train_dataset, f)
     with open(f"../data/test_dataset.pickle", mode="wb") as f:
@@ -311,7 +315,7 @@ def main(path, domains):
 
 
 if __name__ == "__main__":
-    dataset_path = "../data"
+    dataset_path = "../data/BCCWJ_1.1"
     domain_dict = {
         "OC": "Yahoo!知恵袋",
         "OW": "白書",
