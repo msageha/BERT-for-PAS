@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.4.1-devel-ubuntu20.04
+FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu20.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -20,4 +20,22 @@ RUN curl https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tar.xz --output Py
 RUN rm Python-3.9.7.tar.xz
 RUN rm -r Python-3.9.7
 
+WORKDIR /app
+ADD ./requirements.txt ./requirements.txt
 
+RUN pip3 install --upgrade pip
+RUN pip3 install -r /app/requirements.txt
+RUN rm /app/requirements.txt
+
+RUN curl -sSL https://sdk.cloud.google.com | bash
+ENV PATH $PATH:/root/google-cloud-sdk/bin
+
+ARG GOOGLE_APPLICATION_CREDENTIALS
+RUN echo ${GOOGLE_APPLICATION_CREDENTIALS} | base64 -d > key.json
+ENV GOOGLE_APPLICATION_CREDENTIALS="/app/key.json"
+
+RUN gcloud auth activate-service-account --key-file=key.json
+
+ENV GCS_PROJECT_ID="jarvisml-experimental"
+ENV GCS_BUCKET_NAME="jarvisml-experimental-kubeflowpipelines-default"
+ENV KFP_ENDPOINT="https://3a67f17e7a41c65c-dot-us-central1.pipelines.googleusercontent.com"
